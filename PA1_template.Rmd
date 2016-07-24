@@ -87,7 +87,7 @@ p+facet_wrap(~days,ncol=2)
 
 times<- strptime(sprintf("%04d",amd$interval[1:288]),"%H%M")
 
-plot(times,ast,type = "l",xlab=xlab,ylab=ylab)
+plot(times,ast,type = "l")
 
 
 ```
