@@ -1,8 +1,7 @@
 ---
-<<<<<<< HEAD
 title: "RepData_PA1"
 author: "CRK8"
-date: "July 16, 2016"
+date: "January 7, 2017"
 output: html_document
 ---
 
@@ -10,7 +9,7 @@ output: html_document
 
 Loading and preprocessing the data into R Studio:
 
-```{r, echo = T}
+```{r load, cache=T, echo = T}
 download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip", dest="amd.zip", mode="wb")
 unzip ("amd.zip")
 amd<-read.csv("./activity.csv",colClasses=c("integer","Date","integer"))
@@ -24,10 +23,10 @@ For this part of the assignment, you can ignore the missing values in the datase
 2) If you do not understand the difference between a histogram and a barplot, research the difference between them. Make a histogram of the total number of steps taken each day
 3) Calculate and report the mean and median of the total number of steps taken per day
 
-```{r, echo = T}
+```{r total steps, echo = T}
 spd<-tapply(amd$steps,amd$date,sum)
 spd
-hist(spd)
+hist(spd,main="Histogram of Steps per Day")
 dev.off()
 mean(spd,na.rm=T)
 median(spd,na.rm=T)
@@ -38,12 +37,12 @@ median(spd,na.rm=T)
 1) Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 2) Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r, echo = T}
+```{r daily pattern, echo = T}
 ast<-tapply(amd$steps,amd$interval,mean, na.rm=T)
 times<- strptime(sprintf("%04d",amd$interval[1:288]),"%H%M")
 xlab<-"Time of Day"
 ylab<-"Avg steps per 5 min"
-plot(times,ast,type = "l",xlab=xlab,ylab=ylab)
+plot(times,ast,type = "l",xlab=xlab,ylab=ylab,main="Avg Number of Steps Taken Throughout the Day")
 dev.off()
 format(times[which(ast==max(ast))],"%H:%M")
 ```
@@ -57,14 +56,14 @@ Note that there are a number of days/intervals where there are missing values (c
 3) Create a new dataset that is equal to the original dataset but with the missing data filled in.
 4) Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
-```{r, echo = T}
+```{r missing values, echo = T}
 nrow(amd)-sum(complete.cases(amd))
 
 amd1<-amd
-amd1$steps[is.na(amd$1steps)]<-rep(ast,61)[is.na(amd1$steps)]
+amd1$steps[is.na(amd1$steps)]<-rep(ast,61)[is.na(amd1$steps)]
 
 spd1<-tapply(amd1$steps,amd1$date,sum)
-hist(spd1)
+hist(spd1,main="Histogram of Steps per Day, omitting missing values")
 dev.off()
 mean(spd1)
 median(spd1)
@@ -77,44 +76,22 @@ For this part the weekdays() function may be of some help here. Use the dataset 
 1) Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 2) Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
 
-```{r, echo = T}
-library(gdata)
-library(ggplot2)
+```{r weekends, echo = T}
+library(backports)
+library(lattice)
 amd1$day<-as.factor(ifelse(startsWith(weekdays(amd1$date),"S"),"weekend","weekday"))
-ast<-tapply(amd$steps,amd$interval,mean)
+amd.weekday<-subset(amd1,day=="weekday")
+amd.weekend<-subset(amd1,day=="weekend")
+      
+ast.weekday<-tapply(amd.weekday$steps,amd.weekday$interval,mean, na.rm=T)
+ast.weekend<-tapply(amd.weekend$steps,amd.weekend$interval,mean, na.rm=T)
+times1<- strptime(sprintf("%04d",amd1$interval[1:288]),"%H%M")
 
-p<-ggplot(amd1,Emissions,facets=.~days)
-p+facet_wrap(~days,ncol=2)
-
-times<- strptime(sprintf("%04d",amd$interval[1:288]),"%H%M")
-
-plot(times,ast,type = "")
-
+par(mfrow=c(2,1))
+xlab<-"Time of Day"
+ylab<-"Avg steps per 5 min"
+plot(times1,ast.weekday,type = "l",xlab=xlab,ylab=ylab,main="Average Number of Steps on Weekdays")
+plot(times1,ast.weekend,type = "l",xlab=xlab,ylab=ylab,main="Average Number of Steps on Weekends")
+dev.off()
 
 ```
-=======
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
-
-
-## Loading and preprocessing the data
-
-
-
-## What is mean total number of steps taken per day?
-
-
-
-## What is the average daily activity pattern?
-
-
-
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
->>>>>>> 80edf39c3bb508fee88e3394542f967dd3fd3270
